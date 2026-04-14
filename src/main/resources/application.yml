@@ -1,0 +1,30 @@
+server:
+  port: 8000
+
+spring:
+  application:
+    name: msa_gatewayservice
+
+  cloud:
+    gateway:
+      default-filters:
+        - PreserveHostHeader
+
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/**, /bootstrap-4.6.2-dist/**, /css/**, /images/**, /js/**, /static/**, /jquery-ui-1.13.1.custom/**, /smarteditor/**
+          filters:
+            - RewritePath=/user-service/(?<segment>.*), /${segment}
+
+        - id: board-service
+          uri: lb://board-service
+          predicates:
+            - Path=/board-service/**, /community/**
+          filters:
+            - RewritePath=/board-service/(?<segment>.*), /${segment}
+
+logging:
+  level:
+    com.netflix.discovery: WARN
